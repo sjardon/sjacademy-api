@@ -1,0 +1,58 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  _id: String!
+
+  """User name"""
+  name: String!
+  password: String!
+  email: String!
+
+  """Profile picture"""
+  picture: String
+  isTeacher: Boolean!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Auth {
+  access_token: String!
+}
+
+type Query {
+  users: [User!]!
+  user(_id: String!): User!
+  me: User!
+}
+
+type Mutation {
+  login(password: String!, email: String!): Auth!
+  createUser(createUserInput: CreateUserInput!): User!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  removeUser(_id: String!): User!
+}
+
+input CreateUserInput {
+  """User name"""
+  name: String!
+  password: String!
+  email: String!
+
+  """Profile picture"""
+  picture: String
+}
+
+input UpdateUserInput {
+  """User id to update"""
+  _id: String!
+
+  """User name"""
+  name: String
+  email: String
+
+  """Profile picture"""
+  picture: String
+  isTeacher: Boolean
+}
