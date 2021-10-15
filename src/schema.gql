@@ -1,0 +1,92 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  _id: String!
+
+  """User name"""
+  name: String!
+  password: String!
+  email: String!
+
+  """Profile picture"""
+  picture: String
+  isTeacher: Boolean!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Auth {
+  access_token: String!
+}
+
+type Course {
+  _id: String!
+  name: String!
+  description: String
+  teachers: [User!]!
+  price: Float
+  status: String
+  publishedAt: String
+  createdAt: String
+  updatedAt: String
+}
+
+type Query {
+  users: [User!]!
+  user(_id: String!): User!
+  me: User!
+  courses: [Course!]!
+  course(_id: String!): Course!
+}
+
+type Mutation {
+  login(password: String!, email: String!): Auth!
+  createUser(createUserInput: CreateUserInput!): User!
+  updateUser(updateUserInput: UpdateUserInput!): User!
+  removeUser(_id: String!): User!
+  createCourse(createCourseInput: CreateCourseInput!): Course!
+  updateCourse(updateCourseInput: UpdateCourseInput!): Course!
+  removeCourse(_id: String!): Course!
+}
+
+input CreateUserInput {
+  """User name"""
+  name: String!
+  password: String!
+  email: String!
+
+  """Profile picture"""
+  picture: String
+}
+
+input UpdateUserInput {
+  """User id to update"""
+  _id: String!
+
+  """User name"""
+  name: String
+  email: String
+
+  """Profile picture"""
+  picture: String
+  isTeacher: Boolean
+}
+
+input CreateCourseInput {
+  name: String!
+  description: String
+  price: Float
+}
+
+input UpdateCourseInput {
+  _id: String!
+  name: String
+  description: String
+  price: Float
+  status: String
+  publishedAt: String
+  createdAt: String
+  updatedAt: String
+}
