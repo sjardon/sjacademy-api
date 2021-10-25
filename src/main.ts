@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 
-// import * as fs from 'fs';
 import { createStream } from 'rotating-file-stream';
 import * as morgan from 'morgan';
 

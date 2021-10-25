@@ -12,7 +12,6 @@ describe('UsersService', () => {
   let fakeUsers: User[];
 
   beforeEach(async () => {
-    // It's good practice override methods of this form?
     fakeUsers = [];
     fakeUserModel = {
       findOne: async (filter?) => {
@@ -75,26 +74,9 @@ describe('UsersService', () => {
     fakeUserModel.findOne = jest.fn();
     fakeUserModel.findOne.mockResolvedValue(toCreateUser);
 
-    // await expect(service.create(toCreateUser)).rejects.toBeInstanceOf(
-    //   BadRequestException,
-    // );
-
-    // expect(async () => await service.create(toCreateUser)).toThrow();
-
     service.create(toCreateUser).catch((thrownError) => {
       const expectedError = new BadRequestException('User already exists');
       expect(thrownError).toEqual(expectedError);
     });
-
-    // expect.assertions(1);
-    // service.create(toCreateUser).catch((err) => {
-    //   expect(err).not.toBeNull();
-    // });
-
-    // expect.assertions(1);
-
-    // await service
-    //   .create(toCreateUser)
-    //   .catch((err) => expect(err).not.toBeNull());
   });
 });

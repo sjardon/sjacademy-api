@@ -38,7 +38,12 @@ type Query {
   user(_id: String!): User!
   me: User!
   courses: [Course!]!
-  course(_id: String!): Course!
+  course(customCourseInput: CustomCourseInput!): Course!
+  myTeacherCourses: [Course!]!
+}
+
+input CustomCourseInput {
+  _id: String!
 }
 
 type Mutation {
@@ -48,7 +53,7 @@ type Mutation {
   removeUser(_id: String!): User!
   createCourse(createCourseInput: CreateCourseInput!): Course!
   updateCourse(updateCourseInput: UpdateCourseInput!): Course!
-  removeCourse(_id: String!): Course!
+  removeCourse(customCourseInput: CustomCourseInput!): Course!
 }
 
 input CreateUserInput {

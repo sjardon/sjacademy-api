@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, UpdateQuery } from 'mongoose';
+import { FilterQuery, Model, UpdateQuery } from 'mongoose';
+import { User, UserDocument } from 'src/users/entities/user.entity';
 import { CreateCourseInput } from './dto/create-course.input';
 import { UpdateCourseInput } from './dto/update-course.input';
 import { Course, CourseDocument } from './entities/course.entity';
@@ -16,7 +17,15 @@ export class CoursesService {
   }
 
   async findAll() {
-    return await this.courseModel.find();
+    return await this.courseModel.find().populate('teachers');
+  }
+
+  async findByTeacher(teacherId: string) {
+    return await this.courseModel
+      .find({
+        teachers: teacherId,
+      } as FilterQuery<CourseDocument>)
+      .exec();
   }
 
   async findOne(_id: string) {
