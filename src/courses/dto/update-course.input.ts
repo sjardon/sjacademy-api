@@ -4,7 +4,7 @@ import { Course } from '../entities/course.entity';
 
 @InputType()
 export class UpdateCourseInput extends PartialType(
-  OmitType(Course, ['teachers']),
+  OmitType(Course, ['teachers', 'sections']),
   InputType,
 ) {
   @Field()
