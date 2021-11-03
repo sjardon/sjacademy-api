@@ -74,6 +74,8 @@ type Mutation {
   updateCourse(updateCourseInput: UpdateCourseInput!): Course!
   removeCourse(customCourseInput: CustomCourseInput!): Course!
   createSection(createSectionInput: CreateSectionInput!): Section!
+  updateSection(updateSectionInput: UpdateSectionInput!): Section!
+  removeSection(customSectionInput: CustomSectionInput!): Section!
 }
 
 input CreateUserInput {
@@ -123,4 +125,14 @@ input CreateSectionInput {
 
   """Section order"""
   order: Int!
+}
+
+input UpdateSectionInput {
+  courseId: String
+  name: String
+  description: String
+
+  """Section order"""
+  order: Int
+  _id: String!
 }

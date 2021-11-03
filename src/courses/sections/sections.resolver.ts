@@ -30,13 +30,20 @@ export class SectionsResolver {
     return await this.sectionsService.findOne(customSectionInput._id);
   }
 
-  // @Mutation(() => Section)
-  // updateSection(@Args('updateSectionInput') updateSectionInput: UpdateSectionInput) {
-  //   return this.sectionsService.update(updateSectionInput.id, updateSectionInput);
-  // }
+  @Mutation(() => Section)
+  updateSection(
+    @Args('updateSectionInput') updateSectionInput: UpdateSectionInput,
+  ) {
+    return this.sectionsService.update(
+      updateSectionInput._id,
+      updateSectionInput,
+    );
+  }
 
-  // @Mutation(() => Section)
-  // removeSection(@Args('id', { type: () => Int }) id: number) {
-  //   return this.sectionsService.remove(id);
-  // }
+  @Mutation(() => Section)
+  removeSection(
+    @Args('customSectionInput') customSectionInput: CustomSectionInput,
+  ) {
+    return this.sectionsService.remove(customSectionInput._id);
+  }
 }
