@@ -21,11 +21,23 @@ type Auth {
   access_token: String!
 }
 
+type Section {
+  _id: String!
+  name: String!
+  description: String!
+
+  """Section order"""
+  order: Int!
+  createdAt: String
+  updatedAt: String
+}
+
 type Course {
   _id: String!
   name: String!
   description: String
   teachers: [User!]!
+  sections: [Section!]!
   price: Float
   status: String
   publishedAt: String
@@ -40,10 +52,17 @@ type Query {
   courses: [Course!]!
   course(customCourseInput: CustomCourseInput!): Course!
   myTeacherCourses: [Course!]!
+  sectionsByCourse(customSectionInput: CustomSectionInput!): [Section!]!
+  section(customSectionInput: CustomSectionInput!): Section!
 }
 
 input CustomCourseInput {
   _id: String!
+}
+
+input CustomSectionInput {
+  courseId: String
+  _id: String
 }
 
 type Mutation {
@@ -54,6 +73,9 @@ type Mutation {
   createCourse(createCourseInput: CreateCourseInput!): Course!
   updateCourse(updateCourseInput: UpdateCourseInput!): Course!
   removeCourse(customCourseInput: CustomCourseInput!): Course!
+  createSection(createSectionInput: CreateSectionInput!): Section!
+  updateSection(updateSectionInput: UpdateSectionInput!): Section!
+  removeSection(customSectionInput: CustomSectionInput!): Section!
 }
 
 input CreateUserInput {
@@ -94,4 +116,23 @@ input UpdateCourseInput {
   publishedAt: String
   createdAt: String
   updatedAt: String
+}
+
+input CreateSectionInput {
+  courseId: String!
+  name: String!
+  description: String!
+
+  """Section order"""
+  order: Int!
+}
+
+input UpdateSectionInput {
+  courseId: String
+  name: String
+  description: String
+
+  """Section order"""
+  order: Int
+  _id: String!
 }

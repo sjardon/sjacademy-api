@@ -3,6 +3,7 @@ import {
   CanActivate,
   ExecutionContext,
   Inject,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { GqlExecutionContext } from '@nestjs/graphql';
@@ -25,14 +26,20 @@ export class IsTeacherGuard extends GqlAuthGuard implements CanActivate {
     const { user: loggedUser } = ctx.getContext().req;
 
     if (!loggedUser) {
-      return false;
+      throw new UnauthorizedException();
     }
 
     try {
       const user = await this.usersService.findOne(loggedUser._id);
-      return user?.isTeacher ? true : false;
+      const { isTeacher } = user;
+
+      if (isTeacher) {
+        return true;
+      }
+
+      throw new UnauthorizedException();
     } catch (thrownError) {
-      return false;
+      throw thrownError;
     }
   }
 }
