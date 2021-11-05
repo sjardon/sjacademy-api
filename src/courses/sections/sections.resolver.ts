@@ -4,11 +4,18 @@ import { Section } from './entities/section.entity';
 import { CreateSectionInput } from './dto/create-section.input';
 import { UpdateSectionInput } from './dto/update-section.input';
 import { CustomSectionInput } from './dto/custom-section.input';
+import { SectionArgName } from 'src/core/decorators/section-arg-name.decorator';
+import { UseGuards } from '@nestjs/common';
+import { IsSectionTeacherGuard } from 'src/core/guards/is-section-teacher.guard';
+import { IsCourseSectionTeacherGuard } from 'src/core/guards/is-course-section-teacher.guard';
+import { CourseArgName } from 'src/core/decorators/course-arg-name.decorator';
 
 @Resolver(() => Section)
 export class SectionsResolver {
   constructor(private readonly sectionsService: SectionsService) {}
 
+  @CourseArgName('createSectionInput')
+  @UseGuards(IsCourseSectionTeacherGuard)
   @Mutation(() => Section)
   async createSection(
     @Args('createSectionInput') createSectionInput: CreateSectionInput,
@@ -17,10 +24,10 @@ export class SectionsResolver {
   }
 
   @Query(() => [Section], { name: 'sectionsByCourse' })
-  findByCourse(
+  async findByCourse(
     @Args('customSectionInput') customSectionInput: CustomSectionInput,
   ) {
-    return this.sectionsService.findByCourse(customSectionInput.courseId);
+    return await this.sectionsService.findByCourse(customSectionInput.courseId);
   }
 
   @Query(() => Section, { name: 'section' })
@@ -30,20 +37,24 @@ export class SectionsResolver {
     return await this.sectionsService.findOne(customSectionInput._id);
   }
 
+  @SectionArgName('updateSectionInput')
+  @UseGuards(IsSectionTeacherGuard)
   @Mutation(() => Section)
-  updateSection(
+  async updateSection(
     @Args('updateSectionInput') updateSectionInput: UpdateSectionInput,
   ) {
-    return this.sectionsService.update(
+    return await this.sectionsService.update(
       updateSectionInput._id,
       updateSectionInput,
     );
   }
 
+  @SectionArgName('customSectionInput')
+  @UseGuards(IsSectionTeacherGuard)
   @Mutation(() => Section)
-  removeSection(
+  async removeSection(
     @Args('customSectionInput') customSectionInput: CustomSectionInput,
   ) {
-    return this.sectionsService.remove(customSectionInput._id);
+    return await this.sectionsService.remove(customSectionInput._id);
   }
 }
