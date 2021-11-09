@@ -1,13 +1,12 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsInt, IsNotEmpty, IsPositive, MaxLength } from 'class-validator';
-import { Lesson, LessonSchema } from '../lessons/entities/lesson.entity';
 
-export type SectionDocument = Section & Document;
+export type LessonDocument = Lesson & Document;
 
 @Schema()
 @ObjectType()
-export class Section {
+export class Lesson {
   @Field()
   _id: string;
 
@@ -27,9 +26,13 @@ export class Section {
   @MaxLength(500, {
     message: 'Description is too long',
   })
-  @Prop({ required: true })
-  @Field()
+  @Prop()
+  @Field({ nullable: true })
   description: string;
+
+  @Prop({ required: false })
+  @Field()
+  video: string;
 
   @IsInt({
     message: 'Order have to by an integer',
@@ -38,14 +41,8 @@ export class Section {
     message: 'Order have to by positive',
   })
   @Prop()
-  @Field(() => Int, { description: 'Section order' })
+  @Field(() => Int, { description: 'Lesson order' })
   order: number;
-
-  @Prop({
-    type: [LessonSchema],
-  })
-  @Field((type) => [Lesson!])
-  lessons: Lesson[];
 
   @Prop({ type: Date, default: Date.now })
   @Field({ nullable: true })
@@ -56,4 +53,4 @@ export class Section {
   updatedAt: string;
 }
 
-export const SectionSchema = SchemaFactory.createForClass(Section);
+export const LessonSchema = SchemaFactory.createForClass(Lesson);
