@@ -4,11 +4,18 @@ import { Lesson } from './entities/lesson.entity';
 import { CreateLessonInput } from './dto/create-lesson.input';
 import { UpdateLessonInput } from './dto/update-lesson.input';
 import { CustomLessonInput } from './dto/custom-lesson.input';
+import { UseGuards } from '@nestjs/common';
+import { IsLessonTeacherGuard } from 'src/core/guards/is-lesson-teacher.guard';
+import { LessonArgName } from 'src/core/decorators/lesson-arg-name.decorator';
+import { CourseArgName } from 'src/core/decorators/course-arg-name.decorator';
+import { IsSectionLessonTeacherGuard } from 'src/core/guards/is-section-lesson-teacher.guard';
 
 @Resolver(() => Lesson)
 export class LessonsResolver {
   constructor(private readonly lessonsService: LessonsService) {}
 
+  @CourseArgName('createLessonInput')
+  @UseGuards(IsSectionLessonTeacherGuard)
   @Mutation(() => Lesson)
   async createLesson(
     @Args('createLessonInput') createLessonInput: CreateLessonInput,
@@ -30,6 +37,8 @@ export class LessonsResolver {
     return this.lessonsService.findBySection(customLessonInput.sectionId);
   }
 
+  @LessonArgName('updateLessonInput')
+  @UseGuards(IsLessonTeacherGuard)
   @Mutation(() => Lesson)
   updateLesson(
     @Args('updateLessonInput') updateLessonInput: UpdateLessonInput,
@@ -37,6 +46,8 @@ export class LessonsResolver {
     return this.lessonsService.update(updateLessonInput._id, updateLessonInput);
   }
 
+  @LessonArgName('customLessonInput')
+  @UseGuards(IsLessonTeacherGuard)
   @Mutation(() => Lesson)
   removeLesson(
     @Args('customLessonInput') customLessonInput: CustomLessonInput,

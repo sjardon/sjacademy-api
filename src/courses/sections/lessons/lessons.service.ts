@@ -51,7 +51,6 @@ export class LessonsService {
       return toCreateLesson;
     } catch (thrownError) {
       await session.abortTransaction();
-      console.log(thrownError);
       if (thrownError instanceof NotFoundException) {
         throw thrownError;
       } else {
@@ -156,7 +155,6 @@ export class LessonsService {
       return searchedLesson;
     } catch (thrownError) {
       await session.abortTransaction();
-      console.log(thrownError);
       if (thrownError instanceof NotFoundException) {
         throw thrownError;
       } else {
@@ -199,7 +197,7 @@ export class LessonsService {
       return deletedLesson;
     } catch (thrownError) {
       await session.abortTransaction();
-      console.log(thrownError);
+
       if (thrownError instanceof NotFoundException) {
         throw thrownError;
       } else {

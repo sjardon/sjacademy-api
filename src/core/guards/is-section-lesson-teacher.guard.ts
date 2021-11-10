@@ -2,10 +2,12 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { IsCourseTeacherGuard } from './is-course-teacher.guard';
 
 @Injectable()
-export class IsCourseSectionTeacherGuard extends IsCourseTeacherGuard {
-  async validateCourseTeacher(loggedUser, courseInput) {
+export class IsSectionLessonTeacherGuard extends IsCourseTeacherGuard {
+  async validateCourseTeacher(loggedUser, lessonInput) {
     try {
-      const course = await this.coursesService.findOne(courseInput.courseId);
+      const course = await this.coursesService.findBySection(
+        lessonInput.sectionId,
+      );
 
       if (!course) {
         return false;

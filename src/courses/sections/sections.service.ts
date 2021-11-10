@@ -70,6 +70,32 @@ export class SectionsService {
     }
   }
 
+  async findByLesson(lessonId: string) {
+    try {
+      const searchedCourse = await this.courseModel.findOne(
+        { 'sections.lessons._id': new mongoose.Types.ObjectId(lessonId) },
+        {
+          'sections.$': 1,
+        },
+      );
+
+      if (!searchedCourse) {
+        throw new NotFoundException();
+      }
+
+      const { sections } = searchedCourse;
+      const [searchedSection] = sections;
+
+      return searchedSection;
+    } catch (thrownError) {
+      if (thrownError instanceof NotFoundException) {
+        throw thrownError;
+      } else {
+        throw new InternalServerErrorException();
+      }
+    }
+  }
+
   async findOne(_id: string) {
     try {
       const searchedCourse = await this.courseModel
