@@ -4,44 +4,53 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Model, UpdateQuery } from 'mongoose';
-import * as mongoose from 'mongoose';
+import { Model } from 'mongoose';
 import { Course, CourseDocument } from 'src/courses/entities/course.entity';
-import { CreateSectionInput } from './dto/create-section.input';
-import { UpdateSectionInput } from './dto/update-section.input';
-import { Section, SectionDocument } from './entities/section.entity';
+import { Section, SectionDocument } from '../entities/section.entity';
+import { CreateLessonInput } from './dto/create-lesson.input';
+import { UpdateLessonInput } from './dto/update-lesson.input';
+import { Lesson, LessonDocument } from './entities/lesson.entity';
+import * as mongoose from 'mongoose';
 
 @Injectable()
-export class SectionsService {
+export class LessonsService {
   constructor(
     @InjectModel(Course.name) private courseModel: Model<CourseDocument>,
     @InjectModel(Section.name) private sectionModel: Model<SectionDocument>,
+    @InjectModel(Lesson.name) private lessonModel: Model<LessonDocument>,
     @InjectConnection() private readonly connection: mongoose.Connection,
   ) {}
 
-  async create(createSectionInput: CreateSectionInput): Promise<Section> {
+  async create(createLessonInput: CreateLessonInput) {
     const session = await this.connection.startSession();
 
     session.startTransaction();
     try {
-      const toCreateSection = new this.sectionModel(createSectionInput);
-      const course = await this.courseModel.findById(
-        createSectionInput.courseId,
-      );
+      const { sectionId } = createLessonInput;
+      const toCreateLesson = new this.lessonModel(createLessonInput);
 
-      if (!course) {
+      const searchedCourse = await this.courseModel
+        .findOne({ 'sections._id': new mongoose.Types.ObjectId(sectionId) })
+        .exec();
+
+      if (!searchedCourse) {
         throw new NotFoundException();
       }
 
-      course.sections.push(toCreateSection);
+      const { sections } = searchedCourse;
 
-      await course.save();
+      const searchedSection = sections.find(
+        (section) => section._id == sectionId,
+      );
+
+      searchedSection.lessons.push(toCreateLesson);
+
+      await searchedCourse.save();
       await session.commitTransaction();
 
-      return toCreateSection;
+      return toCreateLesson;
     } catch (thrownError) {
       await session.abortTransaction();
-
       if (thrownError instanceof NotFoundException) {
         throw thrownError;
       } else {
@@ -52,55 +61,11 @@ export class SectionsService {
     }
   }
 
-  async findByCourse(courseId): Promise<Section[]> {
-    try {
-      const course = await this.courseModel.findById(courseId);
-
-      if (!course) {
-        throw new NotFoundException();
-      }
-
-      return course.sections;
-    } catch (thrownError) {
-      if (thrownError instanceof NotFoundException) {
-        throw thrownError;
-      } else {
-        throw new InternalServerErrorException();
-      }
-    }
-  }
-
-  async findByLesson(lessonId: string) {
-    try {
-      const searchedCourse = await this.courseModel.findOne(
-        { 'sections.lessons._id': new mongoose.Types.ObjectId(lessonId) },
-        {
-          'sections.$': 1,
-        },
-      );
-
-      if (!searchedCourse) {
-        throw new NotFoundException();
-      }
-
-      const { sections } = searchedCourse;
-      const [searchedSection] = sections;
-
-      return searchedSection;
-    } catch (thrownError) {
-      if (thrownError instanceof NotFoundException) {
-        throw thrownError;
-      } else {
-        throw new InternalServerErrorException();
-      }
-    }
-  }
-
-  async findOne(_id: string) {
+  async findBySection(sectionId: string) {
     try {
       const searchedCourse = await this.courseModel
         .findOne(
-          { 'sections._id': new mongoose.Types.ObjectId(_id) },
+          { 'sections._id': new mongoose.Types.ObjectId(sectionId) },
           {
             'sections.$': 1,
           },
@@ -114,7 +79,7 @@ export class SectionsService {
       const { sections } = searchedCourse;
       const [searchedSection] = sections;
 
-      return searchedSection;
+      return searchedSection.lessons;
     } catch (thrownError) {
       if (thrownError instanceof NotFoundException) {
         throw thrownError;
@@ -124,32 +89,72 @@ export class SectionsService {
     }
   }
 
-  async update(_id: string, updateSectionInput: UpdateSectionInput) {
-    const session = await this.connection.startSession();
-
-    session.startTransaction();
+  async findOne(_id: string) {
     try {
       const searchedCourse = await this.courseModel
-        .findOne({ 'sections._id': new mongoose.Types.ObjectId(_id) })
+        .findOne(
+          { 'sections.lessons._id': new mongoose.Types.ObjectId(_id) },
+          {
+            'sections.lessons.$': 1,
+          },
+        )
         .exec();
 
       if (!searchedCourse) {
         throw new NotFoundException();
       }
-      const { sections } = searchedCourse;
-      const searchedSection = sections.find((section) => section._id == _id);
 
-      searchedSection.updatedAt = Date.now().toString();
-      Object.assign(searchedSection, updateSectionInput);
+      const { sections } = searchedCourse;
+      const [searchedSection] = sections;
+
+      const searchedLesson = searchedSection.lessons.find(
+        (lesson) => lesson._id == _id,
+      );
+
+      return searchedLesson;
+    } catch (thrownError) {
+      if (thrownError instanceof NotFoundException) {
+        throw thrownError;
+      } else {
+        throw new InternalServerErrorException();
+      }
+    }
+  }
+
+  async update(_id: string, updateLessonInput: UpdateLessonInput) {
+    const session = await this.connection.startSession();
+
+    session.startTransaction();
+    try {
+      const toCreateLesson = new this.lessonModel(updateLessonInput);
+
+      const searchedCourse = await this.courseModel
+        .findOne({ 'sections.lessons._id': new mongoose.Types.ObjectId(_id) })
+        .exec();
+
+      if (!searchedCourse) {
+        throw new NotFoundException();
+      }
+
+      const { sections } = searchedCourse;
+
+      const searchedSection = sections.find((section) =>
+        section.lessons.some((lesson) => lesson._id == _id),
+      );
+
+      const searchedLesson = searchedSection.lessons.find(
+        (lesson) => lesson._id == _id,
+      );
+
+      searchedLesson.updatedAt = Date.now().toString();
+      Object.assign(searchedLesson, updateLessonInput);
 
       await searchedCourse.save();
-
       await session.commitTransaction();
 
-      return searchedSection;
+      return searchedLesson;
     } catch (thrownError) {
       await session.abortTransaction();
-
       if (thrownError instanceof NotFoundException) {
         throw thrownError;
       } else {
@@ -166,26 +171,30 @@ export class SectionsService {
     session.startTransaction();
     try {
       const searchedCourse = await this.courseModel
-        .findOne({ 'sections._id': new mongoose.Types.ObjectId(_id) })
+        .findOne({ 'sections.lessons._id': new mongoose.Types.ObjectId(_id) })
         .exec();
+
       if (!searchedCourse) {
         throw new NotFoundException();
       }
 
-      const searchedSectionIndex = searchedCourse.sections.findIndex(
-        (section) => section._id == _id,
-      );
-      if (searchedSectionIndex == -1) {
-        throw new NotFoundException();
-      }
+      const { sections } = searchedCourse;
 
-      const deletedSection = searchedCourse.sections[searchedSectionIndex];
-      searchedCourse.sections.splice(searchedSectionIndex, 1);
+      const searchedSection = sections.find((section) =>
+        section.lessons.some((lesson) => lesson._id == _id),
+      );
+
+      const searchedLessonIndex = searchedSection.lessons.findIndex(
+        (lesson) => lesson._id == _id,
+      );
+
+      const deletedLesson = searchedSection.lessons[searchedLessonIndex];
+      searchedSection.lessons.splice(searchedLessonIndex, 1);
 
       await searchedCourse.save();
       await session.commitTransaction();
 
-      return deletedSection;
+      return deletedLesson;
     } catch (thrownError) {
       await session.abortTransaction();
 

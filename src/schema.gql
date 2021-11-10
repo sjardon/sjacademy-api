@@ -21,6 +21,18 @@ type Auth {
   access_token: String!
 }
 
+type Lesson {
+  _id: String!
+  name: String!
+  description: String
+  video: String!
+
+  """Lesson order"""
+  order: Int!
+  createdAt: String
+  updatedAt: String
+}
+
 type Section {
   _id: String!
   name: String!
@@ -28,6 +40,7 @@ type Section {
 
   """Section order"""
   order: Int!
+  lessons: [Lesson!]!
   createdAt: String
   updatedAt: String
 }
@@ -54,6 +67,8 @@ type Query {
   myTeacherCourses: [Course!]!
   sectionsByCourse(customSectionInput: CustomSectionInput!): [Section!]!
   section(customSectionInput: CustomSectionInput!): Section!
+  lesson(customLessonInput: CustomLessonInput!): Lesson!
+  lessonsBySection(customLessonInput: CustomLessonInput!): [Lesson!]!
 }
 
 input CustomCourseInput {
@@ -62,6 +77,11 @@ input CustomCourseInput {
 
 input CustomSectionInput {
   courseId: String
+  _id: String
+}
+
+input CustomLessonInput {
+  sectionId: String
   _id: String
 }
 
@@ -76,6 +96,9 @@ type Mutation {
   createSection(createSectionInput: CreateSectionInput!): Section!
   updateSection(updateSectionInput: UpdateSectionInput!): Section!
   removeSection(customSectionInput: CustomSectionInput!): Section!
+  createLesson(createLessonInput: CreateLessonInput!): Lesson!
+  updateLesson(updateLessonInput: UpdateLessonInput!): Lesson!
+  removeLesson(customLessonInput: CustomLessonInput!): Lesson!
 }
 
 input CreateUserInput {
@@ -133,6 +156,27 @@ input UpdateSectionInput {
   description: String
 
   """Section order"""
+  order: Int
+  _id: String!
+}
+
+input CreateLessonInput {
+  sectionId: String!
+  name: String!
+  description: String
+  video: String!
+
+  """Lesson order"""
+  order: Int!
+}
+
+input UpdateLessonInput {
+  sectionId: String
+  name: String
+  description: String
+  video: String
+
+  """Lesson order"""
   order: Int
   _id: String!
 }
