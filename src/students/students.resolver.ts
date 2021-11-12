@@ -21,4 +21,30 @@ export class StudentsResolver {
       customCourseInput._id,
     );
   }
+
+  @Mutation(() => User)
+  @UseGuards(GqlAuthGuard)
+  async unsubscribeUserCourse(
+    @CurrentUser() user: User,
+    @Args('customCourseInput') customCourseInput: CustomCourseInput,
+  ) {
+    return await this.studentsService.unsubscribeCourse(
+      user._id,
+      customCourseInput._id,
+    );
+  }
+
+  @Query(() => User, { name: 'myCoursesSubscriptions' })
+  @UseGuards(GqlAuthGuard)
+  async findAll(@CurrentUser() user: User) {
+    return await this.studentsService.findOne(user._id);
+  }
+
+  @Query(() => [User], { name: 'studentsByCourse' })
+  @UseGuards(GqlAuthGuard)
+  async findByCourse(
+    @Args('customCourseInput') customCourseInput: CustomCourseInput,
+  ) {
+    return await this.studentsService.findByCourse(customCourseInput._id);
+  }
 }
