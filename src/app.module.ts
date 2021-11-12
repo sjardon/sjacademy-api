@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { CoursesModule } from './courses/courses.module';
+import { StudentsModule } from './students/students.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CoursesModule } from './courses/courses.module';
     AuthModule,
     UsersModule,
     CoursesModule,
+    StudentsModule,
   ],
   providers: [AppService],
 })
