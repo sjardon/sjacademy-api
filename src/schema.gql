@@ -2,25 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
-  _id: String!
-
-  """User name"""
-  name: String!
-  password: String!
-  email: String!
-
-  """Profile picture"""
-  picture: String
-  isTeacher: Boolean!
-  createdAt: String!
-  updatedAt: String!
-}
-
-type Auth {
-  access_token: String!
-}
-
 type Lesson {
   _id: String!
   name: String!
@@ -56,6 +37,26 @@ type Course {
   publishedAt: String
   createdAt: String
   updatedAt: String
+}
+
+type User {
+  _id: String!
+
+  """User name"""
+  name: String!
+  password: String!
+  email: String!
+
+  """Profile picture"""
+  picture: String
+  isTeacher: Boolean!
+  courses: [Course!]!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Auth {
+  access_token: String!
 }
 
 type Query {
@@ -99,6 +100,7 @@ type Mutation {
   createLesson(createLessonInput: CreateLessonInput!): Lesson!
   updateLesson(updateLessonInput: UpdateLessonInput!): Lesson!
   removeLesson(customLessonInput: CustomLessonInput!): Lesson!
+  subscribeUserCourse(customCourseInput: CustomCourseInput!): User!
 }
 
 input CreateUserInput {

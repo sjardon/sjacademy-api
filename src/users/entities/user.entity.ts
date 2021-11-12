@@ -1,5 +1,7 @@
 import { ObjectType, Field, Int, InputType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Course } from 'src/courses/entities/course.entity';
+import * as mongoose from 'mongoose';
 
 export type UserDocument = User & Document;
 
@@ -28,6 +30,13 @@ export class User {
   @Prop({ default: false })
   @Field()
   isTeacher: boolean;
+
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: () => Course }],
+    required: true,
+  })
+  @Field((type) => [Course!])
+  courses: Course[];
 
   @Prop({ type: Date, default: Date.now })
   @Field()
