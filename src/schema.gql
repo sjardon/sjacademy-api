@@ -70,6 +70,8 @@ type Query {
   section(customSectionInput: CustomSectionInput!): Section!
   lesson(customLessonInput: CustomLessonInput!): Lesson!
   lessonsBySection(customLessonInput: CustomLessonInput!): [Lesson!]!
+  myCoursesSubscriptions: User!
+  studentsByCourse(customCourseInput: CustomCourseInput!): [User!]!
 }
 
 input CustomCourseInput {
@@ -101,6 +103,7 @@ type Mutation {
   updateLesson(updateLessonInput: UpdateLessonInput!): Lesson!
   removeLesson(customLessonInput: CustomLessonInput!): Lesson!
   subscribeUserCourse(customCourseInput: CustomCourseInput!): User!
+  unsubscribeUserCourse(customCourseInput: CustomCourseInput!): User!
 }
 
 input CreateUserInput {

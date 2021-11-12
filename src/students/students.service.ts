@@ -18,6 +18,26 @@ export class StudentsService {
     @InjectConnection() private readonly connection: mongoose.Connection,
   ) {}
 
+  async findOne(userId: string) {
+    try {
+      return await this.userModel.findById(userId).populate('courses');
+    } catch (thrownError) {
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async findByCourse(courseId: string) {
+    try {
+      return await this.userModel
+        .find({
+          courses: new mongoose.Types.ObjectId(courseId),
+        } as mongoose.FilterQuery<UserDocument>)
+        .populate('courses');
+    } catch (thrownError) {
+      throw new InternalServerErrorException();
+    }
+  }
+
   async subscribeCourse(userId: string, courseId: string) {
     const session = await this.connection.startSession();
 
@@ -84,5 +104,44 @@ export class StudentsService {
     );
 
     return isSubscriber ? true : false;
+  }
+
+  async unsubscribeCourse(userId: string, courseId: string) {
+    const session = await this.connection.startSession();
+
+    session.startTransaction();
+    try {
+      const user = await this.userModel.findById(userId).populate('courses');
+
+      if (!user) {
+        throw new NotFoundException();
+      }
+
+      const searchedCourseIndex = user.courses.findIndex(
+        (course) => course._id == courseId,
+      );
+
+      if (searchedCourseIndex == -1) {
+        throw new NotFoundException();
+      }
+
+      user.courses.splice(searchedCourseIndex, 1);
+
+      user.save();
+
+      await session.commitTransaction();
+
+      return user;
+    } catch (thrownError) {
+      await session.abortTransaction();
+
+      if (thrownError instanceof NotFoundException) {
+        throw thrownError;
+      } else {
+        throw new InternalServerErrorException();
+      }
+    } finally {
+      session.endSession();
+    }
   }
 }
