@@ -9,7 +9,6 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { CoursesModule } from './courses/courses.module';
 import { StudentsModule } from './students/students.module';
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -19,7 +18,8 @@ import { StudentsModule } from './students/students.module';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
     MongooseModule.forRoot(
-      `mongodb://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASSWORD}@${process.env.MONGO_DB_HOST}:${process.env.MONGO_DB_PORT}`,
+      // `mongodb://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASSWORD}@${process.env.MONGO_DB_HOST}:${process.env.MONGO_DB_PORT}`,
+      process.env.MONGO_DB_CONNECTION_URI,
     ),
     AuthModule,
     UsersModule,

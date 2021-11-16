@@ -5,9 +5,14 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "engines": {
+    "node": "14.18.0",
+    "npm": "8.1.2"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
-    "build": "nest build",
+    "build": "nest build && cp package.json dist/package.json && cp package-lock.json dist/package-lock.json && cp Procfile dist/Procfile",
+    "zip": "cd dist && zip bundle.zip -r *",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -30,7 +35,7 @@
     "@nestjs/passport": "^8.0.1",
     "@nestjs/platform-express": "^8.0.0",
     "apollo-server-express": "^3.3.0",
-    "bcrypt": "^5.0.1",
+    "bcryptjs": "^2.4.3",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
     "graphql": "^15.6.1",
