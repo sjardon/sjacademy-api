@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - staging
-      - feature/1pj9cbt-subscription_listing
 
 jobs:
   build:

@@ -73,4 +73,6 @@ export class Course {
   updatedAt: string;
 }
 
-export const CourseSchema = SchemaFactory.createForClass(Course);
+const CourseSchema = SchemaFactory.createForClass(Course);
+
+export { CourseSchema };

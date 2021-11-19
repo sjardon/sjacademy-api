@@ -144,4 +144,45 @@ export class StudentsService {
       session.endSession();
     }
   }
+
+  async unsubscribeAllByCourse(courseId: string) {
+    const session = await this.connection.startSession();
+
+    session.startTransaction();
+    try {
+      let users = await this.userModel.find({
+        courses: new mongoose.Types.ObjectId(courseId),
+      } as mongoose.FilterQuery<UserDocument>);
+
+      if (users) {
+        users = users.map((user) => {
+          const searchedCourseIndex = user.courses.findIndex((course) => {
+            return course._id.toString() == courseId;
+          });
+
+          if (searchedCourseIndex == -1) {
+            return user;
+          }
+
+          user.courses.splice(searchedCourseIndex, 1);
+          user.save();
+          return user;
+        });
+      }
+
+      await session.commitTransaction();
+
+      return users;
+    } catch (thrownError) {
+      await session.abortTransaction();
+
+      if (thrownError instanceof NotFoundException) {
+        throw thrownError;
+      } else {
+        throw new InternalServerErrorException();
+      }
+    } finally {
+      session.endSession();
+    }
+  }
 }

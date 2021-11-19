@@ -9,6 +9,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { CoursesModule } from './courses/courses.module';
 import { StudentsModule } from './students/students.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { EventsModule } from './events/events.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -21,10 +23,12 @@ import { StudentsModule } from './students/students.module';
       // `mongodb://${process.env.MONGO_DB_USER}:${process.env.MONGO_DB_PASSWORD}@${process.env.MONGO_DB_HOST}:${process.env.MONGO_DB_PORT}`,
       process.env.MONGO_DB_CONNECTION_URI,
     ),
+    EventEmitterModule.forRoot(),
     AuthModule,
     UsersModule,
     CoursesModule,
     StudentsModule,
+    EventsModule,
   ],
   providers: [AppService],
 })

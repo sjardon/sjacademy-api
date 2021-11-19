@@ -17,10 +17,12 @@ export class AuthService {
 
     const { password: hashPassword } = user;
 
-    const match = await bcrypt.compare(password, hashPassword);
+    if (hashPassword) {
+      const match = await bcrypt.compare(password, hashPassword);
 
-    if (match) {
-      return user;
+      if (match) {
+        return user;
+      }
     }
 
     return false;

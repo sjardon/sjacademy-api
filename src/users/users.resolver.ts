@@ -6,8 +6,6 @@ import { UpdateUserInput } from './dto/update-user.input';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from 'src/auth/gql-auth.guard';
 import { CurrentUser } from 'src/core/decorators/current-user.decorator';
-import { ValidationClassPipe } from 'src/core/pipes/validation-class.pipe';
-import { CustomCourseInput } from 'src/courses/dto/custom-course.input';
 
 @Resolver(() => User)
 export class UsersResolver {
